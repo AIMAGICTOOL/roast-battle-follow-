@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoastBattle Arena | Savage Gen-Z Social Feed</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="genz-dark">
 
+  <!-- TOP GLASS NAVBAR -->
+  <header class="navbar">
+    <div class="logo-box">
+      <h1 class="logo-text">ROAST<span class="neon-magenta">BATTLE</span></h1>
+      <span class="badge-live">ARENA</span>
+    </div>
+    <div class="nav-right">
+      <button id="openModalBtn" class="btn-genz-primary">+ Drop Target 🎯</button>
+      <div class="user-profile-badge" id="myProfileBtn">
+        <span class="avatar-sm">👑</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- LIVE TICKER BAR -->
+  <div class="ticker-bar">
+    <p><i class="fa-solid fa-fire neon-cyan-text"></i> <b>ARENA STATS:</b> @Anon_Alpha got ratioed by 450+ Savages! 🔥</p>
+  </div>
+
+  <!-- MAIN THREE-COLUMN LAYOUT -->
+  <div class="main-layout">
+    
+    <!-- LEFT SIDEBAR: PROFILE & ROASTER STATS -->
+    <aside class="sidebar-left">
+      <div class="profile-card glass-panel">
+        <div class="avatar-large">👑</div>
+        <h3 class="user-display-name">@YourHandle</h3>
+        <span class="rank-tag">☣️ Roast Assassin</span>
+        
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-num">1.2K</span>
+            <span class="stat-label">Minions</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">48</span>
+            <span class="stat-label">Targets</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">850</span>
+            <span class="stat-label">Flames 🔥</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER FEED -->
+    <main class="feed-container">
+      <div class="filter-pills">
+        <button class="pill-btn active"><i class="fa-solid fa-fire-flame-curved"></i> Viral Targets</button>
+        <button class="pill-btn"><i class="fa-solid fa-users"></i> Minion Feed</button>
+        <button class="pill-btn"><i class="fa-solid fa-skull"></i> Hall of Shame 👑</button>
+      </div>
+
+      <div id="roastFeed" class="feed-list">
+        <!-- SAMPLE POST CARD -->
+        <article class="post-card glass-panel">
+          <div class="post-header">
+            <div class="avatar-glow">💀</div>
+            <div class="user-info">
+              <span class="username">@Braveless_Soul <span class="tag-badge">Clown Target</span></span>
+              <span class="post-time">12m ago</span>
+            </div>
+            <button class="btn-follow-small">+ Recruit</button>
+          </div>
+
+          <p class="post-prompt">"Going on a blind date in 10 mins. Destroy my outfit, don't hold back 😭"</p>
+          
+          <div class="media-box">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Target Outfit" class="post-img">
+          </div>
+
+          <div class="post-footer">
+            <button class="react-btn"><span class="emoji">💀</span> <span class="count">420</span></button>
+            <button class="react-btn"><span class="emoji">🔥</span> <span class="count">89 Savages</span></button>
+            <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share Roast</button>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: TOP ROASTERS LEADERBOARD -->
+    <aside class="sidebar-right">
+      <div class="glass-panel">
+        <h3 class="panel-title"><i class="fa-solid fa-crown neon-yellow-text"></i> Top Savages</h3>
+        <ul class="leaderboard-list">
+          <li class="leader-item">
+            <span>#1 @RoastGod</span>
+            <span class="flame-score">🔥 12.4K</span>
+          </li>
+          <li class="leader-item">
+            <span>#2 @SavageQueen</span>
+            <span class="flame-score">🔥 9.1K</span>
+          </li>
+          <li class="leader-item">
+            <span>#3 @RatioMaster</span>
+            <span class="flame-score">🔥 7.8K</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FLOATING ACTION BUTTON (FAB) -->
+  <button id="fabBtn" class="fab-btn-neon">+</button>
+
+  <!-- CREATE POST MODAL -->
+  <div id="postModal" class="modal-backdrop hidden">
+    <div class="modal-box glass-panel">
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+      <h2 class="modal-title">Ask For A <span class="neon-magenta">Savage Roast</span> 🎯</h2>
+      <form id="createPostForm">
+        <div class="form-group">
+          <label>Target Prompt / Bio / Setup</label>
+          <textarea id="postPrompt" placeholder="e.g. Roast my LinkedIn bio, tell me why I'm still single..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Target Image URL (Optional)</label>
+          <input type="url" id="postImage" placeholder="https://i.imgur.com/your-pic.jpg">
+        </div>
+        <button type="submit" class="btn-genz-primary full-width">Drop Into Arena 🔥</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
