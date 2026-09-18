@@ -1,134 +1,193 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. THEME SWITCHER
-  const themeToggleBtn = document.getElementById('themeToggleBtn');
-  if (localStorage.getItem('theme') === 'light') {
-    document.body.classList.add('light-mode');
-    if (themeToggleBtn) themeToggleBtn.checked = true;
-  }
 
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('change', () => {
-      if (themeToggleBtn.checked) {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      }
-    });
-  }
-
-  // 2. VIEW SWITCHING (FEED VS PROFILE)
+  // VIEW NAVIGATION (FEED VS PROFILE)
   const feedView = document.getElementById('feedView');
   const profileView = document.getElementById('profileView');
 
-  // Mobile + Desktop Navigation Buttons
-  const feedButtons = [
-    document.getElementById('navFeedBtn'),
-    document.getElementById('dtNavFeedBtn'),
-    document.getElementById('sideNavFeedBtn')
-  ];
+  // Mobile Bottom Nav
+  const navFeedBtn = document.getElementById('navFeedBtn');
+  const navProfileBtn = document.getElementById('navProfileBtn');
 
-  const profileButtons = [
-    document.getElementById('navProfileBtn'),
-    document.getElementById('dtNavProfileBtn'),
-    document.getElementById('sideNavProfileBtn')
-  ];
+  // Desktop Side Nav
+  const sideNavFeedBtn = document.getElementById('sideNavFeedBtn');
+  const sideNavProfileBtn = document.getElementById('sideNavProfileBtn');
+  const dtNavFeedBtn = document.getElementById('dtNavFeedBtn');
+  const dtNavProfileBtn = document.getElementById('dtNavProfileBtn');
 
-  const switchView = (activeType) => {
-    // Clear all active states
-    feedButtons.forEach(btn => btn?.classList.remove('active'));
-    profileButtons.forEach(btn => btn?.classList.remove('active'));
+  function switchView(viewName) {
+    if (viewName === 'feed') {
+      feedView.classList.add('active-view');
+      feedView.classList.remove('hidden-view');
+      profileView.classList.remove('active-view');
+      profileView.classList.add('hidden-view');
 
-    if (activeType === 'feed') {
-      feedButtons.forEach(btn => btn?.classList.add('active'));
-      feedView?.classList.remove('hidden-view');
-      feedView?.classList.add('active-view');
-      profileView?.classList.remove('active-view');
-      profileView?.classList.add('hidden-view');
+      navFeedBtn?.classList.add('active');
+      navProfileBtn?.classList.remove('active');
+      sideNavFeedBtn?.classList.add('active');
+      sideNavProfileBtn?.classList.remove('active');
+      dtNavFeedBtn?.classList.add('active');
+      dtNavProfileBtn?.classList.remove('active');
     } else {
-      profileButtons.forEach(btn => btn?.classList.add('active'));
-      profileView?.classList.remove('hidden-view');
-      profileView?.classList.add('active-view');
-      feedView?.classList.remove('active-view');
-      feedView?.classList.add('hidden-view');
+      profileView.classList.add('active-view');
+      profileView.classList.remove('hidden-view');
+      feedView.classList.remove('active-view');
+      feedView.classList.add('hidden-view');
+
+      navProfileBtn?.classList.add('active');
+      navFeedBtn?.classList.remove('active');
+      sideNavProfileBtn?.classList.add('active');
+      sideNavFeedBtn?.classList.remove('active');
+      dtNavProfileBtn?.classList.add('active');
+      dtNavFeedBtn?.classList.remove('active');
     }
-  };
-
-  feedButtons.forEach(btn => btn?.addEventListener('click', () => switchView('feed')));
-  profileButtons.forEach(btn => btn?.addEventListener('click', () => switchView('profile')));
-
-  // 3. EDIT PROFILE BIO MODAL
-  const editProfileBtn = document.getElementById('editProfileBtn');
-  const editBioModal = document.getElementById('editBioModal');
-  const closeBioModalBtn = document.getElementById('closeBioModalBtn');
-  const editBioForm = document.getElementById('editBioForm');
-
-  if (editProfileBtn) editProfileBtn.addEventListener('click', () => editBioModal.classList.remove('hidden'));
-  if (closeBioModalBtn) closeBioModalBtn.addEventListener('click', () => editBioModal.classList.add('hidden'));
-
-  if (editBioForm) {
-    editBioForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newHandle = document.getElementById('inputUsername').value;
-      const newBio = document.getElementById('inputBio').value;
-
-      if(newHandle) document.getElementById('profileDisplayName').innerText = newHandle;
-      if(newBio) document.getElementById('profileBioText').innerText = `"${newBio}"`;
-
-      editBioModal.classList.add('hidden');
-    });
   }
 
-  // 4. CREATE POST MODAL (ALL DROP ROAST BUTTONS)
-  const dropRoastButtons = [
-    document.getElementById('fabBtn'),        // Mobile Bottom FAB
-    document.getElementById('dtFabBtn'),     // Desktop Top Nav
-    document.getElementById('sideFabBtn')     // Desktop Left Sidebar
-  ];
+  navFeedBtn?.addEventListener('click', () => switchView('feed'));
+  navProfileBtn?.addEventListener('click', () => switchView('profile'));
+  sideNavFeedBtn?.addEventListener('click', () => switchView('feed'));
+  sideNavProfileBtn?.addEventListener('click', () => switchView('profile'));
+  dtNavFeedBtn?.addEventListener('click', () => switchView('feed'));
+  dtNavProfileBtn?.addEventListener('click', () => switchView('profile'));
 
+  // THEME TOGGLE (LIGHT / DARK MODE)
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  themeToggleBtn?.addEventListener('change', () => {
+    if (themeToggleBtn.checked) {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  });
+
+  // MODAL CONTROLS
   const postModal = document.getElementById('postModal');
+  const editBioModal = document.getElementById('editBioModal');
+
+  const fabBtn = document.getElementById('fabBtn');
+  const sideFabBtn = document.getElementById('sideFabBtn');
+  const dtFabBtn = document.getElementById('dtFabBtn');
+
   const closeModalBtn = document.getElementById('closeModalBtn');
-  const createPostForm = document.getElementById('createPostForm');
+  const closeBioModalBtn = document.getElementById('closeBioModalBtn');
+  const editProfileBtn = document.getElementById('editProfileBtn');
 
-  dropRoastButtons.forEach(btn => btn?.addEventListener('click', () => postModal.classList.remove('hidden')));
-  if (closeModalBtn) closeModalBtn.addEventListener('click', () => postModal.classList.add('hidden'));
+  function openModal(modal) { modal.classList.remove('hidden'); }
+  function closeModal(modal) { modal.classList.add('hidden'); }
 
-  if (createPostForm) {
-    createPostForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const prompt = document.getElementById('postPrompt').value;
-      const imageUrl = document.getElementById('postImage').value;
+  fabBtn?.addEventListener('click', () => openModal(postModal));
+  sideFabBtn?.addEventListener('click', () => openModal(postModal));
+  dtFabBtn?.addEventListener('click', () => openModal(postModal));
+  editProfileBtn?.addEventListener('click', () => openModal(editBioModal));
 
-      if (!prompt.trim()) return;
+  closeModalBtn?.addEventListener('click', () => closeModal(postModal));
+  closeBioModalBtn?.addEventListener('click', () => closeModal(editBioModal));
 
-      const roastFeed = document.getElementById('roastFeed');
-      const newPost = document.createElement('article');
-      newPost.className = 'post-card glass-panel';
+  // MEDIA TYPE TOGGLE (LINK VS FILE UPLOAD)
+  const tabLinkBtn = document.getElementById('tabLinkBtn');
+  const tabUploadBtn = document.getElementById('tabUploadBtn');
+  const mediaLinkContainer = document.getElementById('mediaLinkContainer');
+  const mediaUploadContainer = document.getElementById('mediaUploadContainer');
+  const postFileInput = document.getElementById('postFileInput');
+  const fileNameLabel = document.getElementById('fileNameLabel');
 
-      const imageHTML = imageUrl ? `<div class="media-box"><img src="${imageUrl}" alt="Target Image" class="post-img"></div>` : '';
+  let selectedMediaType = 'link'; // 'link' or 'upload'
 
-      newPost.innerHTML = `
-        <div class="post-header">
-          <div class="avatar-glow">🔥</div>
-          <div class="user-info">
-            <span class="username">@You <span class="tag-badge">Fresh Target</span></span>
-            <span class="post-time">Just now</span>
-          </div>
-        </div>
-        <p class="post-prompt">"${prompt}"</p>
-        ${imageHTML}
-        <div class="post-footer">
-          <button class="react-btn"><span class="emoji">💀</span> <span class="count">0</span></button>
-          <button class="react-btn"><span class="emoji">🔥</span> <span class="count">0 Savages</span></button>
-          <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
-        </div>
-      `;
+  tabLinkBtn?.addEventListener('click', () => {
+    selectedMediaType = 'link';
+    tabLinkBtn.classList.add('active');
+    tabUploadBtn.classList.remove('active');
+    mediaLinkContainer.classList.remove('hidden');
+    mediaUploadContainer.classList.add('hidden');
+  });
 
-      roastFeed.prepend(newPost);
-      createPostForm.reset();
-      postModal.classList.add('hidden');
-      switchView('feed');
-    });
+  tabUploadBtn?.addEventListener('click', () => {
+    selectedMediaType = 'upload';
+    tabUploadBtn.classList.add('active');
+    tabLinkBtn.classList.remove('active');
+    mediaUploadContainer.classList.remove('hidden');
+    mediaLinkContainer.classList.add('hidden');
+  });
+
+  postFileInput?.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      fileNameLabel.innerText = "Selected: " + e.target.files[0].name;
+    }
+  });
+
+  // HELPER TO EXTRACT YOUTUBE EMBED URL
+  function getYouTubeEmbedUrl(url) {
+    if (!url) return null;
+    let videoId = null;
+    if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/watch?v=')) {
+      videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtube.com/shorts/')) {
+      videoId = url.split('shorts/')[1].split('?')[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
+
+  // POST SUBMISSION
+  const createPostForm = document.getElementById('createPostForm');
+  const roastFeed = document.getElementById('roastFeed');
+
+  createPostForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const promptText = document.getElementById('postPrompt').value;
+    const videoLink = document.getElementById('postVideoLink').value;
+    const file = postFileInput.files[0];
+
+    let mediaHTML = '';
+
+    if (selectedMediaType === 'link' && videoLink) {
+      const embedUrl = getYouTubeEmbedUrl(videoLink);
+      if (embedUrl) {
+        mediaHTML = `
+          <div class="media-box">
+            <div class="video-container">
+              <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>`;
+      }
+    } else if (selectedMediaType === 'upload' && file) {
+      const fileUrl = URL.createObjectURL(file);
+      if (file.type.startsWith('video/')) {
+        mediaHTML = `
+          <div class="media-box">
+            <video src="${fileUrl}" controls class="post-video"></video>
+          </div>`;
+      } else if (file.type.startsWith('image/')) {
+        mediaHTML = `
+          <div class="media-box">
+            <img src="${fileUrl}" class="post-img" alt="Uploaded Target">
+          </div>`;
+      }
+    }
+
+    const newPostCard = document.createElement('article');
+    newPostCard.className = 'post-card glass-panel';
+    newPostCard.innerHTML = `
+      <div class="post-header">
+        <div class="avatar-glow">👑</div>
+        <div class="user-info">
+          <span class="username">@YourHandle <span class="tag-badge">Assassin</span></span>
+          <span class="post-time">Just now</span>
+        </div>
+      </div>
+      <p class="post-prompt">"${promptText}"</p>
+      ${mediaHTML}
+      <div class="post-footer">
+        <button class="react-btn"><span class="emoji">💀</span> <span class="count">0</span></button>
+        <button class="react-btn"><span class="emoji">🔥</span> <span class="count">0 Savages</span></button>
+        <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
+      </div>
+    `;
+
+    roastFeed.prepend(newPostCard);
+    createPostForm.reset();
+    fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
+    closeModal(postModal);
+  });
+
 });
