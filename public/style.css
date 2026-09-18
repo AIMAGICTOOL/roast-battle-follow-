@@ -66,7 +66,7 @@ body.light-mode {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 1.5rem;
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glow);
@@ -80,6 +80,42 @@ body.light-mode {
 .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 0.5px; }
 .neon-magenta { color: var(--neon-magenta); text-shadow: 0 0 10px var(--neon-magenta); }
 .badge-live { background: var(--neon-yellow); color: #000; font-size: 0.55rem; font-weight: 900; padding: 2px 4px; border-radius: 4px; }
+
+/* DESKTOP NAVIGATION */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dt-nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dt-nav-btn.active, .dt-nav-btn:hover {
+  color: var(--neon-cyan);
+  background: var(--input-bg);
+}
+
+.dt-drop-btn, .btn-genz-primary {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  color: #fff;
+  border: none;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+}
+
 .nav-right { display: flex; align-items: center; gap: 10px; }
 
 .icon-btn-settings {
@@ -149,24 +185,45 @@ input:checked + .slider:before {
   padding: 1rem; margin-bottom: 1rem; width: 100%;
 }
 
+/* DESKTOP SIDEBAR MENU */
+.desktop-sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.side-menu-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.side-menu-btn.active, .side-menu-btn:hover {
+  background: var(--input-bg);
+  border-color: var(--card-border);
+  color: var(--neon-cyan);
+}
+
 /* FILTER PILLS STYLING & HORIZONTAL SCROLL */
 .filter-pills-container {
   width: 100%;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   margin-bottom: 1rem;
 }
 
-.filter-pills-container::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
+.filter-pills-container::-webkit-scrollbar { display: none; }
 
-.filter-pills {
-  display: flex;
-  gap: 0.5rem;
-  width: max-content;
-}
+.filter-pills { display: flex; gap: 0.5rem; width: max-content; }
 
 .pill-btn {
   background: var(--panel-bg);
@@ -186,10 +243,7 @@ input:checked + .slider:before {
   box-shadow: 0 0 8px var(--border-glow);
 }
 
-.pill-fame {
-  border-color: rgba(255, 230, 0, 0.3);
-}
-
+.pill-fame { border-color: rgba(255, 230, 0, 0.3); }
 .pill-fame:hover, .pill-fame.active {
   color: var(--neon-yellow);
   border-color: var(--neon-yellow);
@@ -217,7 +271,7 @@ input:checked + .slider:before {
 .profile-bio { font-size: 0.85rem; color: var(--text-dim); margin: 0.6rem 0 1rem 0; line-height: 1.4; }
 .empty-msg { text-align: center; color: var(--text-dim); font-size: 0.85rem; padding: 2rem 0; }
 
-/* CLEAN 3-BUTTON BOTTOM NAVIGATION BAR */
+/* CLEAN 3-BUTTON BOTTOM NAVIGATION BAR (MOBILE) */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 62px;
   background: var(--panel-bg); backdrop-filter: blur(20px);
@@ -296,7 +350,7 @@ input:checked + .slider:before {
 .form-group textarea, .form-group input { background: var(--input-bg); border: 1px solid var(--card-border); padding: 0.7rem; border-radius: 8px; color: var(--text-main); outline: none; font-size: 0.85rem; }
 .full-width { width: 100%; }
 
-/* DESKTOP BREAKPOINT */
+/* BREAKPOINTS (MOBILE VS DESKTOP) */
 @media (min-width: 993px) {
   .main-layout { display: grid; grid-template-columns: 240px 1fr 240px; gap: 1.5rem; }
   .bottom-nav { display: none; }
@@ -304,5 +358,5 @@ input:checked + .slider:before {
 }
 
 @media (max-width: 992px) {
-  .sidebar-left, .sidebar-right { display: none; }
+  .sidebar-left, .sidebar-right, .desktop-nav { display: none; }
 }
