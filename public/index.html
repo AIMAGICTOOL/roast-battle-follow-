@@ -81,6 +81,7 @@
         <div class="filter-pills-container">
           <div class="filter-pills">
             <button class="pill-btn active"><i class="fa-solid fa-fire-flame-curved"></i> Viral Targets</button>
+            <button class="pill-btn"><i class="fa-solid fa-video"></i> Roast Clips 🎬</button>
             <button class="pill-btn"><i class="fa-solid fa-users"></i> Minions</button>
             <button class="pill-btn"><i class="fa-solid fa-skull"></i> Hall of Shame 💀</button>
             <button class="pill-btn"><i class="fa-solid fa-crown"></i> Hall of Fame 👑</button>
@@ -88,6 +89,7 @@
         </div>
 
         <div id="roastFeed" class="feed-list">
+          <!-- DEMO IMAGE POST -->
           <article class="post-card glass-panel">
             <div class="post-header">
               <div class="avatar-glow">💀</div>
@@ -104,6 +106,29 @@
             <div class="post-footer">
               <button class="react-btn"><span class="emoji">💀</span> <span class="count">420</span></button>
               <button class="react-btn"><span class="emoji">🔥</span> <span class="count">89 Savages</span></button>
+              <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
+            </div>
+          </article>
+
+          <!-- DEMO EMBEDDED YOUTUBE/REEL POST -->
+          <article class="post-card glass-panel">
+            <div class="post-header">
+              <div class="avatar-glow">🎬</div>
+              <div class="user-info">
+                <span class="username">@ClipMaster <span class="tag-badge">Video</span></span>
+                <span class="post-time">1h ago</span>
+              </div>
+              <button class="btn-follow-small">+ Recruit</button>
+            </div>
+            <p class="post-prompt">"Rate my roasting skills in this short video 🎯"</p>
+            <div class="media-box">
+              <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Embedded Roast Clip" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            </div>
+            <div class="post-footer">
+              <button class="react-btn"><span class="emoji">💀</span> <span class="count">1.1K</span></button>
+              <button class="react-btn"><span class="emoji">🔥</span> <span class="count">310 Savages</span></button>
               <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
             </div>
           </article>
@@ -202,20 +227,46 @@
     </div>
   </div>
 
-  <!-- CREATE POST MODAL -->
+  <!-- CREATE POST / DROP ROAST MODAL (UPDATED WITH SMART MEDIA OPTIONS) -->
   <div id="postModal" class="modal-backdrop hidden">
     <div class="modal-box glass-panel">
       <button class="close-modal" id="closeModalBtn">&times;</button>
       <h2 class="modal-title">Ask For A Roast 🎯</h2>
+      
       <form id="createPostForm">
         <div class="form-group">
           <label>Target Setup / Bio</label>
-          <textarea id="postPrompt" placeholder="e.g. Roast my outfit..." required></textarea>
+          <textarea id="postPrompt" placeholder="e.g. Roast my outfit or this clip..." required></textarea>
         </div>
+
+        <!-- MEDIA TYPE SELECTOR TABS -->
         <div class="form-group">
-          <label>Target Image URL (Optional)</label>
-          <input type="url" id="postImage" placeholder="https://i.imgur.com/example.jpg">
+          <label>Select Media Attachment (Optional)</label>
+          <div class="media-type-toggle">
+            <button type="button" class="media-tab-btn active" id="tabLinkBtn">
+              <i class="fa-brands fa-youtube"></i> YouTube / Reel Link
+            </button>
+            <button type="button" class="media-tab-btn" id="tabUploadBtn">
+              <i class="fa-solid fa-upload"></i> Upload File
+            </button>
+          </div>
         </div>
+
+        <!-- OPTION 1: EMBED LINK INPUT -->
+        <div id="mediaLinkContainer" class="form-group">
+          <input type="url" id="postVideoLink" placeholder="Paste YouTube Short / Video link here...">
+          <small class="input-hint">Video plays directly inside the app feed!</small>
+        </div>
+
+        <!-- OPTION 2: FILE UPLOAD INPUT -->
+        <div id="mediaUploadContainer" class="form-group hidden">
+          <div class="file-drop-area">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span id="fileNameLabel">Choose Image or Video (Max 15s)</span>
+            <input type="file" id="postFileInput" accept="image/*,video/*">
+          </div>
+        </div>
+
         <button type="submit" class="btn-genz-primary full-width">Drop Into Arena 🔥</button>
       </form>
     </div>
