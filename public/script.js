@@ -1,15 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. SLIDING THEME TOGGLE SWITCH LOGIC
+  // 1. THEME SWITCHER
   const themeToggleBtn = document.getElementById('themeToggleBtn');
-
-  // Check saved theme preference on page load
-  const currentTheme = localStorage.getItem('theme');
-  if (currentTheme === 'light') {
+  if (localStorage.getItem('theme') === 'light') {
     document.body.classList.add('light-mode');
     if (themeToggleBtn) themeToggleBtn.checked = true;
   }
 
-  // Toggle Theme on Switch Change
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('change', () => {
       if (themeToggleBtn.checked) {
@@ -22,28 +18,63 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. MODAL OPEN / CLOSE HANDLERS
-  const openModalBtn = document.getElementById('openModalBtn');
-  const fabBtn = document.getElementById('fabBtn');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const postModal = document.getElementById('postModal');
-  const createPostForm = document.getElementById('createPostForm');
+  // 2. BOTTOM NAVIGATION & VIEW SWITCHING (Feed & Profile)
+  const navFeedBtn = document.getElementById('navFeedBtn');
+  const navProfileBtn = document.getElementById('navProfileBtn');
 
-  const openModal = () => postModal.classList.remove('hidden');
-  const closeModal = () => postModal.classList.add('hidden');
+  const feedView = document.getElementById('feedView');
+  const profileView = document.getElementById('profileView');
 
-  if (openModalBtn) openModalBtn.addEventListener('click', openModal);
-  if (fabBtn) fabBtn.addEventListener('click', openModal);
-  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+  const switchView = (activeBtn, activeView) => {
+    [navFeedBtn, navProfileBtn].forEach(btn => btn?.classList.remove('active'));
+    [feedView, profileView].forEach(view => {
+      if(view) {
+        view.classList.remove('active-view');
+        view.classList.add('hidden-view');
+      }
+    });
 
-  // Close modal when clicking outside box
-  if (postModal) {
-    postModal.addEventListener('click', (e) => {
-      if (e.target === postModal) closeModal();
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activeView) {
+      activeView.classList.remove('hidden-view');
+      activeView.classList.add('active-view');
+    }
+  };
+
+  if (navFeedBtn) navFeedBtn.addEventListener('click', () => switchView(navFeedBtn, feedView));
+  if (navProfileBtn) navProfileBtn.addEventListener('click', () => switchView(navProfileBtn, profileView));
+
+  // 3. EDIT PROFILE BIO MODAL
+  const editProfileBtn = document.getElementById('editProfileBtn');
+  const editBioModal = document.getElementById('editBioModal');
+  const closeBioModalBtn = document.getElementById('closeBioModalBtn');
+  const editBioForm = document.getElementById('editBioForm');
+
+  if (editProfileBtn) editProfileBtn.addEventListener('click', () => editBioModal.classList.remove('hidden'));
+  if (closeBioModalBtn) closeBioModalBtn.addEventListener('click', () => editBioModal.classList.add('hidden'));
+
+  if (editBioForm) {
+    editBioForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newHandle = document.getElementById('inputUsername').value;
+      const newBio = document.getElementById('inputBio').value;
+
+      if(newHandle) document.getElementById('profileDisplayName').innerText = newHandle;
+      if(newBio) document.getElementById('profileBioText').innerText = `"${newBio}"`;
+
+      editBioModal.classList.add('hidden');
     });
   }
 
-  // 3. FORM SUBMISSION (DUMMY ADD TO FEED)
+  // 4. CREATE POST MODAL (Drop Roast FAB Button)
+  const fabBtn = document.getElementById('fabBtn');
+  const postModal = document.getElementById('postModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const createPostForm = document.getElementById('createPostForm');
+
+  if (fabBtn) fabBtn.addEventListener('click', () => postModal.classList.remove('hidden'));
+  if (closeModalBtn) closeModalBtn.addEventListener('click', () => postModal.classList.add('hidden'));
+
   if (createPostForm) {
     createPostForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -56,9 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const newPost = document.createElement('article');
       newPost.className = 'post-card glass-panel';
 
-      const imageHTML = imageUrl 
-        ? `<div class="media-box"><img src="${imageUrl}" alt="Target Image" class="post-img"></div>` 
-        : '';
+      const imageHTML = imageUrl ? `<div class="media-box"><img src="${imageUrl}" alt="Target Image" class="post-img"></div>` : '';
 
       newPost.innerHTML = `
         <div class="post-header">
@@ -73,22 +102,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="post-footer">
           <button class="react-btn"><span class="emoji">💀</span> <span class="count">0</span></button>
           <button class="react-btn"><span class="emoji">🔥</span> <span class="count">0 Savages</span></button>
-          <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share Roast</button>
+          <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
         </div>
       `;
 
       roastFeed.prepend(newPost);
       createPostForm.reset();
-      closeModal();
+      postModal.classList.add('hidden');
+      switchView(navFeedBtn, feedView);
     });
   }
-
-  // 4. FILTER PILLS SELECTION
-  const pillBtns = document.querySelectorAll('.pill-btn');
-  pillBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      pillBtns.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
 });
