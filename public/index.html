@@ -16,6 +16,20 @@
       <h1 class="logo-text">ROAST<span class="neon-magenta">BATTLE</span></h1>
       <span class="badge-live">ARENA</span>
     </div>
+
+    <!-- DESKTOP NAVIGATION MENU (LAPTOP/DESKTOP ONLY) -->
+    <div class="desktop-nav">
+      <button class="dt-nav-btn active" id="dtNavFeedBtn">
+        <i class="fa-solid fa-house"></i> Feed
+      </button>
+      <button class="dt-nav-btn" id="dtNavProfileBtn">
+        <i class="fa-solid fa-user"></i> Profile
+      </button>
+      <button class="dt-drop-btn" id="dtFabBtn">
+        <i class="fa-solid fa-plus"></i> Drop Roast
+      </button>
+    </div>
+
     <div class="nav-right">
       <label class="theme-switch" title="Toggle Light/Dark Mode">
         <input type="checkbox" id="themeToggleBtn">
@@ -38,12 +52,24 @@
   <!-- MAIN APP CONTAINER -->
   <div class="main-layout">
     
-    <!-- LEFT SIDEBAR (DESKTOP ONLY) -->
+    <!-- LEFT SIDEBAR (DESKTOP NAVIGATION & QUICK USER PROFILE) -->
     <aside class="sidebar-left">
       <div class="profile-card glass-panel">
         <div class="avatar-large">👑</div>
         <h3 class="user-display-name">@YourHandle</h3>
         <span class="rank-tag">☣️ Roast Assassin</span>
+      </div>
+
+      <div class="desktop-sidebar-menu glass-panel">
+        <button class="side-menu-btn active" id="sideNavFeedBtn">
+          <i class="fa-solid fa-house"></i> Arena Feed
+        </button>
+        <button class="side-menu-btn" id="sideNavProfileBtn">
+          <i class="fa-solid fa-user"></i> My Profile
+        </button>
+        <button class="btn-genz-primary full-width" id="sideFabBtn" style="margin-top: 10px;">
+          + Drop Roast 🔥
+        </button>
       </div>
     </aside>
 
@@ -52,8 +78,6 @@
       
       <!-- VIEW 1: HOME FEED -->
       <section id="feedView" class="app-view active-view">
-        
-        <!-- HORIZONTAL SCROLLING FILTER PILLS -->
         <div class="filter-pills-container">
           <div class="filter-pills">
             <button class="pill-btn active"><i class="fa-solid fa-fire-flame-curved"></i> Viral Targets</button>
@@ -141,7 +165,7 @@
 
   </div>
 
-  <!-- CLEAN 3-BUTTON BOTTOM NAV BAR -->
+  <!-- BOTTOM NAV BAR (MOBILE ONLY) -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navFeedBtn">
       <i class="fa-solid fa-house"></i>
