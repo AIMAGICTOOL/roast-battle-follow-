@@ -1,53 +1,87 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // VIEW NAVIGATION (FEED VS PROFILE)
+  // VIEW NAVIGATION (FEED VS NOTIFICATIONS VS PROFILE)
   const feedView = document.getElementById('feedView');
+  const notifView = document.getElementById('notifView');
   const profileView = document.getElementById('profileView');
 
-  // Mobile Bottom Nav
+  // Mobile Bottom Nav Buttons
   const navFeedBtn = document.getElementById('navFeedBtn');
+  const navNotifBtn = document.getElementById('navNotifBtn');
   const navProfileBtn = document.getElementById('navProfileBtn');
 
-  // Desktop Side Nav
+  // Desktop Navigation Buttons
   const sideNavFeedBtn = document.getElementById('sideNavFeedBtn');
+  const sideNavNotifBtn = document.getElementById('sideNavNotifBtn');
   const sideNavProfileBtn = document.getElementById('sideNavProfileBtn');
+  
   const dtNavFeedBtn = document.getElementById('dtNavFeedBtn');
+  const dtNavNotifBtn = document.getElementById('dtNavNotifBtn');
   const dtNavProfileBtn = document.getElementById('dtNavProfileBtn');
 
   function switchView(viewName) {
+    // Hide all views
+    feedView?.classList.add('hidden-view');
+    feedView?.classList.remove('active-view');
+    notifView?.classList.add('hidden-view');
+    notifView?.classList.remove('active-view');
+    profileView?.classList.add('hidden-view');
+    profileView?.classList.remove('active-view');
+
+    // Reset active button states
+    [navFeedBtn, navNotifBtn, navProfileBtn, sideNavFeedBtn, sideNavNotifBtn, sideNavProfileBtn, dtNavFeedBtn, dtNavNotifBtn, dtNavProfileBtn].forEach(btn => btn?.classList.remove('active'));
+
     if (viewName === 'feed') {
       feedView?.classList.add('active-view');
       feedView?.classList.remove('hidden-view');
-      profileView?.classList.remove('active-view');
-      profileView?.classList.add('hidden-view');
-
       navFeedBtn?.classList.add('active');
-      navProfileBtn?.classList.remove('active');
       sideNavFeedBtn?.classList.add('active');
-      sideNavProfileBtn?.classList.remove('active');
       dtNavFeedBtn?.classList.add('active');
-      dtNavProfileBtn?.classList.remove('active');
-    } else {
+    } else if (viewName === 'notif') {
+      notifView?.classList.add('active-view');
+      notifView?.classList.remove('hidden-view');
+      navNotifBtn?.classList.add('active');
+      sideNavNotifBtn?.classList.add('active');
+      dtNavNotifBtn?.classList.add('active');
+    } else if (viewName === 'profile') {
       profileView?.classList.add('active-view');
       profileView?.classList.remove('hidden-view');
-      feedView?.classList.remove('active-view');
-      feedView?.classList.add('hidden-view');
-
       navProfileBtn?.classList.add('active');
-      navFeedBtn?.classList.remove('active');
       sideNavProfileBtn?.classList.add('active');
-      sideNavFeedBtn?.classList.remove('active');
       dtNavProfileBtn?.classList.add('active');
-      dtNavFeedBtn?.classList.remove('active');
     }
   }
 
   navFeedBtn?.addEventListener('click', () => switchView('feed'));
+  navNotifBtn?.addEventListener('click', () => switchView('notif'));
   navProfileBtn?.addEventListener('click', () => switchView('profile'));
+
   sideNavFeedBtn?.addEventListener('click', () => switchView('feed'));
+  sideNavNotifBtn?.addEventListener('click', () => switchView('notif'));
   sideNavProfileBtn?.addEventListener('click', () => switchView('profile'));
+
   dtNavFeedBtn?.addEventListener('click', () => switchView('feed'));
+  dtNavNotifBtn?.addEventListener('click', () => switchView('notif'));
   dtNavProfileBtn?.addEventListener('click', () => switchView('profile'));
+
+  // + FOLLOW BUTTON TOGGLE ACTION
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList.contains('btn-follow-small')) {
+      if (e.target.classList.contains('following')) {
+        e.target.classList.remove('following');
+        e.target.innerText = '+ Follow';
+      } else {
+        e.target.classList.add('following');
+        e.target.innerText = 'Following';
+      }
+    }
+  });
+
+  // INSTAGRAM-STYLE AUTO-TAG FORMATTER (@mention parser)
+  function parseUserTags(text) {
+    if (!text) return '';
+    return text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="user-tag">@$1</span>');
+  }
 
   // THEME TOGGLE (LIGHT / DARK MODE)
   const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -90,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const postFileInput = document.getElementById('postFileInput');
   const fileNameLabel = document.getElementById('fileNameLabel');
 
-  let selectedMediaType = 'link'; // Default option
+  let selectedMediaType = 'link';
 
   if (tabLinkBtn && tabUploadBtn && mediaLinkContainer && mediaUploadContainer) {
     tabLinkBtn.addEventListener('click', (e) => {
@@ -139,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
 
-  // POST SUBMISSION
+  // POST SUBMISSION WITH INSTAGRAM-STYLE USER TAGGING
   const createPostForm = document.getElementById('createPostForm');
   const roastFeed = document.getElementById('roastFeed');
 
@@ -149,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoLink = document.getElementById('postVideoLink')?.value || '';
     const file = postFileInput?.files[0];
 
+    const formattedPrompt = parseUserTags(promptText);
     let mediaHTML = '';
 
     if (selectedMediaType === 'link' && videoLink.trim() !== '') {
@@ -185,8 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="username">@YourHandle <span class="tag-badge">Assassin</span></span>
           <span class="post-time">Just now</span>
         </div>
+        <button class="btn-follow-small">+ Follow</button>
       </div>
-      <p class="post-prompt">"${promptText}"</p>
+      <p class="post-prompt">"${formattedPrompt}"</p>
       ${mediaHTML}
       <div class="post-footer">
         <button class="react-btn"><span class="emoji">💀</span> <span class="count">0</span></button>
@@ -199,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createPostForm.reset();
     if (fileNameLabel) fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
     closeModal(postModal);
+    switchView('feed');
   });
 
 });
