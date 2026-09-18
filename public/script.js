@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function switchView(viewName) {
     if (viewName === 'feed') {
-      feedView.classList.add('active-view');
-      feedView.classList.remove('hidden-view');
-      profileView.classList.remove('active-view');
-      profileView.classList.add('hidden-view');
+      feedView?.classList.add('active-view');
+      feedView?.classList.remove('hidden-view');
+      profileView?.classList.remove('active-view');
+      profileView?.classList.add('hidden-view');
 
       navFeedBtn?.classList.add('active');
       navProfileBtn?.classList.remove('active');
@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
       dtNavFeedBtn?.classList.add('active');
       dtNavProfileBtn?.classList.remove('active');
     } else {
-      profileView.classList.add('active-view');
-      profileView.classList.remove('hidden-view');
-      feedView.classList.remove('active-view');
-      feedView.classList.add('hidden-view');
+      profileView?.classList.add('active-view');
+      profileView?.classList.remove('hidden-view');
+      feedView?.classList.remove('active-view');
+      feedView?.classList.add('hidden-view');
 
       navProfileBtn?.classList.add('active');
       navFeedBtn?.classList.remove('active');
@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeBioModalBtn = document.getElementById('closeBioModalBtn');
   const editProfileBtn = document.getElementById('editProfileBtn');
 
-  function openModal(modal) { modal.classList.remove('hidden'); }
-  function closeModal(modal) { modal.classList.add('hidden'); }
+  function openModal(modal) { modal?.classList.remove('hidden'); }
+  function closeModal(modal) { modal?.classList.add('hidden'); }
 
   fabBtn?.addEventListener('click', () => openModal(postModal));
   sideFabBtn?.addEventListener('click', () => openModal(postModal));
@@ -90,26 +90,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const postFileInput = document.getElementById('postFileInput');
   const fileNameLabel = document.getElementById('fileNameLabel');
 
-  let selectedMediaType = 'link'; // 'link' or 'upload'
+  let selectedMediaType = 'link'; // Default option
 
-  tabLinkBtn?.addEventListener('click', () => {
-    selectedMediaType = 'link';
-    tabLinkBtn.classList.add('active');
-    tabUploadBtn.classList.remove('active');
-    mediaLinkContainer.classList.remove('hidden');
-    mediaUploadContainer.classList.add('hidden');
-  });
+  if (tabLinkBtn && tabUploadBtn && mediaLinkContainer && mediaUploadContainer) {
+    tabLinkBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      selectedMediaType = 'link';
+      tabLinkBtn.classList.add('active');
+      tabUploadBtn.classList.remove('active');
+      mediaLinkContainer.classList.remove('hidden');
+      mediaUploadContainer.classList.add('hidden');
+    });
 
-  tabUploadBtn?.addEventListener('click', () => {
-    selectedMediaType = 'upload';
-    tabUploadBtn.classList.add('active');
-    tabLinkBtn.classList.remove('active');
-    mediaUploadContainer.classList.remove('hidden');
-    mediaLinkContainer.classList.add('hidden');
-  });
+    tabUploadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      selectedMediaType = 'upload';
+      tabUploadBtn.classList.add('active');
+      tabLinkBtn.classList.remove('active');
+      mediaUploadContainer.classList.remove('hidden');
+      mediaLinkContainer.classList.add('hidden');
+    });
+  }
 
   postFileInput?.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
+    if (e.target.files && e.target.files.length > 0) {
       fileNameLabel.innerText = "Selected: " + e.target.files[0].name;
     }
   });
@@ -118,12 +124,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function getYouTubeEmbedUrl(url) {
     if (!url) return null;
     let videoId = null;
-    if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else if (url.includes('youtube.com/watch?v=')) {
-      videoId = url.split('v=')[1].split('&')[0];
-    } else if (url.includes('youtube.com/shorts/')) {
-      videoId = url.split('shorts/')[1].split('?')[0];
+    try {
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('youtube.com/watch')) {
+        const urlParams = new URLSearchParams(url.split('?')[1]);
+        videoId = urlParams.get('v');
+      } else if (url.includes('youtube.com/shorts/')) {
+        videoId = url.split('shorts/')[1].split('?')[0];
+      }
+    } catch (err) {
+      console.error("Invalid URL format", err);
     }
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
@@ -134,19 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   createPostForm?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const promptText = document.getElementById('postPrompt').value;
-    const videoLink = document.getElementById('postVideoLink').value;
-    const file = postFileInput.files[0];
+    const promptText = document.getElementById('postPrompt')?.value || '';
+    const videoLink = document.getElementById('postVideoLink')?.value || '';
+    const file = postFileInput?.files[0];
 
     let mediaHTML = '';
 
-    if (selectedMediaType === 'link' && videoLink) {
-      const embedUrl = getYouTubeEmbedUrl(videoLink);
+    if (selectedMediaType === 'link' && videoLink.trim() !== '') {
+      const embedUrl = getYouTubeEmbedUrl(videoLink.trim());
       if (embedUrl) {
         mediaHTML = `
           <div class="media-box">
             <div class="video-container">
-              <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+              <iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
           </div>`;
       }
@@ -184,9 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    roastFeed.prepend(newPostCard);
+    roastFeed?.prepend(newPostCard);
     createPostForm.reset();
-    fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
+    if (fileNameLabel) fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
     closeModal(postModal);
   });
 
