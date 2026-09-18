@@ -18,31 +18,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. BOTTOM NAVIGATION & VIEW SWITCHING (Feed & Profile)
-  const navFeedBtn = document.getElementById('navFeedBtn');
-  const navProfileBtn = document.getElementById('navProfileBtn');
-
+  // 2. VIEW SWITCHING (FEED VS PROFILE)
   const feedView = document.getElementById('feedView');
   const profileView = document.getElementById('profileView');
 
-  const switchView = (activeBtn, activeView) => {
-    [navFeedBtn, navProfileBtn].forEach(btn => btn?.classList.remove('active'));
-    [feedView, profileView].forEach(view => {
-      if(view) {
-        view.classList.remove('active-view');
-        view.classList.add('hidden-view');
-      }
-    });
+  // Mobile + Desktop Navigation Buttons
+  const feedButtons = [
+    document.getElementById('navFeedBtn'),
+    document.getElementById('dtNavFeedBtn'),
+    document.getElementById('sideNavFeedBtn')
+  ];
 
-    if (activeBtn) activeBtn.classList.add('active');
-    if (activeView) {
-      activeView.classList.remove('hidden-view');
-      activeView.classList.add('active-view');
+  const profileButtons = [
+    document.getElementById('navProfileBtn'),
+    document.getElementById('dtNavProfileBtn'),
+    document.getElementById('sideNavProfileBtn')
+  ];
+
+  const switchView = (activeType) => {
+    // Clear all active states
+    feedButtons.forEach(btn => btn?.classList.remove('active'));
+    profileButtons.forEach(btn => btn?.classList.remove('active'));
+
+    if (activeType === 'feed') {
+      feedButtons.forEach(btn => btn?.classList.add('active'));
+      feedView?.classList.remove('hidden-view');
+      feedView?.classList.add('active-view');
+      profileView?.classList.remove('active-view');
+      profileView?.classList.add('hidden-view');
+    } else {
+      profileButtons.forEach(btn => btn?.classList.add('active'));
+      profileView?.classList.remove('hidden-view');
+      profileView?.classList.add('active-view');
+      feedView?.classList.remove('active-view');
+      feedView?.classList.add('hidden-view');
     }
   };
 
-  if (navFeedBtn) navFeedBtn.addEventListener('click', () => switchView(navFeedBtn, feedView));
-  if (navProfileBtn) navProfileBtn.addEventListener('click', () => switchView(navProfileBtn, profileView));
+  feedButtons.forEach(btn => btn?.addEventListener('click', () => switchView('feed')));
+  profileButtons.forEach(btn => btn?.addEventListener('click', () => switchView('profile')));
 
   // 3. EDIT PROFILE BIO MODAL
   const editProfileBtn = document.getElementById('editProfileBtn');
@@ -66,13 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. CREATE POST MODAL (Drop Roast FAB Button)
-  const fabBtn = document.getElementById('fabBtn');
+  // 4. CREATE POST MODAL (ALL DROP ROAST BUTTONS)
+  const dropRoastButtons = [
+    document.getElementById('fabBtn'),        // Mobile Bottom FAB
+    document.getElementById('dtFabBtn'),     // Desktop Top Nav
+    document.getElementById('sideFabBtn')     // Desktop Left Sidebar
+  ];
+
   const postModal = document.getElementById('postModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
   const createPostForm = document.getElementById('createPostForm');
 
-  if (fabBtn) fabBtn.addEventListener('click', () => postModal.classList.remove('hidden'));
+  dropRoastButtons.forEach(btn => btn?.addEventListener('click', () => postModal.classList.remove('hidden')));
   if (closeModalBtn) closeModalBtn.addEventListener('click', () => postModal.classList.add('hidden'));
 
   if (createPostForm) {
@@ -109,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roastFeed.prepend(newPost);
       createPostForm.reset();
       postModal.classList.add('hidden');
-      switchView(navFeedBtn, feedView);
+      switchView('feed');
     });
   }
 });
