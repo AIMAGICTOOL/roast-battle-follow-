@@ -5,12 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const notifView = document.getElementById('notifView');
   const profileView = document.getElementById('profileView');
 
-  // Mobile Bottom Nav Buttons
   const navFeedBtn = document.getElementById('navFeedBtn');
   const navNotifBtn = document.getElementById('navNotifBtn');
   const navProfileBtn = document.getElementById('navProfileBtn');
 
-  // Desktop Navigation Buttons
   const sideNavFeedBtn = document.getElementById('sideNavFeedBtn');
   const sideNavNotifBtn = document.getElementById('sideNavNotifBtn');
   const sideNavProfileBtn = document.getElementById('sideNavProfileBtn');
@@ -20,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const dtNavProfileBtn = document.getElementById('dtNavProfileBtn');
 
   function switchView(viewName) {
-    // Hide all views
     feedView?.classList.add('hidden-view');
     feedView?.classList.remove('active-view');
     notifView?.classList.add('hidden-view');
@@ -28,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     profileView?.classList.add('hidden-view');
     profileView?.classList.remove('active-view');
 
-    // Reset active button states
     [navFeedBtn, navNotifBtn, navProfileBtn, sideNavFeedBtn, sideNavNotifBtn, sideNavProfileBtn, dtNavFeedBtn, dtNavNotifBtn, dtNavProfileBtn].forEach(btn => btn?.classList.remove('active'));
 
     if (viewName === 'feed') {
@@ -83,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return text.replace(/@([a-zA-Z0-9_]+)/g, '<span class="user-tag">@$1</span>');
   }
 
-  // THEME TOGGLE (LIGHT / DARK MODE)
+  // THEME TOGGLE
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   themeToggleBtn?.addEventListener('change', () => {
     if (themeToggleBtn.checked) {
@@ -116,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModalBtn?.addEventListener('click', () => closeModal(postModal));
   closeBioModalBtn?.addEventListener('click', () => closeModal(editBioModal));
 
-  // MEDIA TYPE TOGGLE (LINK VS FILE UPLOAD)
+  // MEDIA TYPE TOGGLE
   const tabLinkBtn = document.getElementById('tabLinkBtn');
   const tabUploadBtn = document.getElementById('tabUploadBtn');
   const mediaLinkContainer = document.getElementById('mediaLinkContainer');
@@ -173,69 +169,144 @@ document.addEventListener('DOMContentLoaded', () => {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   }
 
-  // POST SUBMISSION WITH INSTAGRAM-STYLE USER TAGGING
-  const createPostForm = document.getElementById('createPostForm');
-  const roastFeed = document.getElementById('roastFeed');
-
-  createPostForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const promptText = document.getElementById('postPrompt')?.value || '';
-    const videoLink = document.getElementById('postVideoLink')?.value || '';
-    const file = postFileInput?.files[0];
-
-    const formattedPrompt = parseUserTags(promptText);
+  // RENDER SINGLE POST CARD
+  function renderPostCard(post) {
+    const formattedPrompt = parseUserTags(post.promptText);
     let mediaHTML = '';
 
-    if (selectedMediaType === 'link' && videoLink.trim() !== '') {
-      const embedUrl = getYouTubeEmbedUrl(videoLink.trim());
+    if (post.mediaType === 'youtube' && post.mediaUrl) {
+      const embedUrl = getYouTubeEmbedUrl(post.mediaUrl);
       if (embedUrl) {
         mediaHTML = `
           <div class="media-box">
             <div class="video-container">
-              <iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              <iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
             </div>
           </div>`;
       }
-    } else if (selectedMediaType === 'upload' && file) {
-      const fileUrl = URL.createObjectURL(file);
-      if (file.type.startsWith('video/')) {
+    } else if (post.mediaType === 'file' && post.mediaUrl) {
+      if (post.mediaUrl.match(/\.(mp4|webm|ogg)$/i)) {
         mediaHTML = `
           <div class="media-box">
-            <video src="${fileUrl}" controls class="post-video"></video>
+            <video src="${post.mediaUrl}" controls class="post-video"></video>
           </div>`;
-      } else if (file.type.startsWith('image/')) {
+      } else {
         mediaHTML = `
           <div class="media-box">
-            <img src="${fileUrl}" class="post-img" alt="Uploaded Target">
+            <img src="${post.mediaUrl}" class="post-img" alt="Target Media">
           </div>`;
       }
     }
 
-    const newPostCard = document.createElement('article');
-    newPostCard.className = 'post-card glass-panel';
-    newPostCard.innerHTML = `
+    const card = document.createElement('article');
+    card.className = 'post-card glass-panel';
+    card.dataset.id = post._id;
+    card.innerHTML = `
       <div class="post-header">
         <div class="avatar-glow">👑</div>
         <div class="user-info">
-          <span class="username">@YourHandle <span class="tag-badge">Assassin</span></span>
-          <span class="post-time">Just now</span>
+          <span class="username">${post.author || '@YourHandle'} <span class="tag-badge">Assassin</span></span>
+          <span class="post-time">${new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
         <button class="btn-follow-small">+ Follow</button>
       </div>
       <p class="post-prompt">"${formattedPrompt}"</p>
       ${mediaHTML}
       <div class="post-footer">
-        <button class="react-btn"><span class="emoji">💀</span> <span class="count">0</span></button>
-        <button class="react-btn"><span class="emoji">🔥</span> <span class="count">0 Savages</span></button>
+        <button class="react-btn skull-btn" onclick="reactToPost('${post._id}', 'skull', this)">
+          <span class="emoji">💀</span> <span class="count">${post.skullsCount || 0}</span>
+        </button>
+        <button class="react-btn flame-btn" onclick="reactToPost('${post._id}', 'flame', this)">
+          <span class="emoji">🔥</span> <span class="count">${post.flamesCount || 0} Savages</span>
+        </button>
         <button class="share-btn"><i class="fa-solid fa-arrow-turn-up"></i> Share</button>
       </div>
     `;
 
-    roastFeed?.prepend(newPostCard);
-    createPostForm.reset();
-    if (fileNameLabel) fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
-    closeModal(postModal);
-    switchView('feed');
+    return card;
+  }
+
+  // FETCH POSTS FROM DATABASE ON LOAD
+  const roastFeed = document.getElementById('roastFeed');
+
+  async function loadPosts() {
+    try {
+      const res = await fetch('/api/posts');
+      const data = await res.json();
+      if (data.success && data.posts.length > 0) {
+        roastFeed.innerHTML = '';
+        data.posts.forEach(post => {
+          roastFeed.appendChild(renderPostCard(post));
+        });
+      }
+    } catch (err) {
+      console.error("Error loading posts from DB:", err);
+    }
+  }
+
+  loadPosts();
+
+  // SUBMIT NEW POST TO DATABASE
+  const createPostForm = document.getElementById('createPostForm');
+
+  createPostForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const promptText = document.getElementById('postPrompt')?.value || '';
+    const videoLink = document.getElementById('postVideoLink')?.value || '';
+
+    let mediaType = 'none';
+    let mediaUrl = '';
+
+    if (selectedMediaType === 'link' && videoLink.trim() !== '') {
+      mediaType = 'youtube';
+      mediaUrl = videoLink.trim();
+    }
+
+    try {
+      const response = await fetch('/api/posts/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: '@YourHandle',
+          promptText,
+          mediaType,
+          mediaUrl
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        roastFeed.prepend(renderPostCard(result.post));
+        createPostForm.reset();
+        if (fileNameLabel) fileNameLabel.innerText = "Choose Image or Video (Max 15s)";
+        closeModal(postModal);
+        switchView('feed');
+      }
+    } catch (err) {
+      console.error("Error creating post:", err);
+    }
   });
 
 });
+
+// GLOBAL REACTION FUNCTION FOR REAL-TIME DB COUNTERS
+async function reactToPost(postId, type, btnElement) {
+  try {
+    const res = await fetch(`/api/posts/${postId}/react`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type })
+    });
+    const data = await res.json();
+    if (data.success) {
+      const countSpan = btnElement.querySelector('.count');
+      if (type === 'flame') {
+        countSpan.innerText = `${data.post.flamesCount} Savages`;
+      } else if (type === 'skull') {
+        countSpan.innerText = data.post.skullsCount;
+      }
+    }
+  } catch (err) {
+    console.error("Reaction failed:", err);
+  }
+}
