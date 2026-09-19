@@ -10,8 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve Static Frontend Files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Atlas Connection Handling
@@ -21,22 +19,23 @@ let isConnected = false;
 const connectDB = async () => {
   if (isConnected) return;
   try {
-    if (!MONGO_URI) {
-      throw new Error("MONGO_URI is not defined in environment variables.");
-    }
+    if (!MONGO_URI) throw new Error("MONGO_URI is not defined.");
     await mongoose.connect(MONGO_URI);
     isConnected = true;
-    console.log('🔥 MongoDB Atlas Connected Successfully!');
+    console.log('🔥 MongoDB Atlas Connected!');
   } catch (err) {
     console.error('❌ DB Connection Error:', err.message);
   }
 };
 
-// Middleware to ensure DB connection on serverless calls
 app.use(async (req, res, next) => {
   await connectDB();
   next();
 });
+
+// Import API Routes
+const postRoutes = require('./routes/postRoutes');
+app.use('/api/posts', postRoutes);
 
 // Health Check API
 app.get('/api/health', (req, res) => {
@@ -51,5 +50,4 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Export app for Vercel Serverless Function
 module.exports = app;
