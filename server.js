@@ -6,37 +6,50 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve Static Frontend Files (public folder)
+// Serve Static Frontend Files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB Atlas Connection
+// MongoDB Atlas Connection Handling
 const MONGO_URI = process.env.MONGO_URI;
 
-if (!MONGO_URI) {
-  console.error('❌ MONGO_URI missing in .env file!');
-} else {
-  mongoose.connect(MONGO_URI)
-    .then(() => console.log('🔥 MongoDB Atlas Connected Successfully!'))
-    .catch((err) => console.error('❌ DB Connection Error:', err));
-}
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected) return;
+  try {
+    if (!MONGO_URI) {
+      throw new Error("MONGO_URI is not defined in environment variables.");
+    }
+    await mongoose.connect(MONGO_URI);
+    isConnected = true;
+    console.log('🔥 MongoDB Atlas Connected Successfully!');
+  } catch (err) {
+    console.error('❌ DB Connection Error:', err.message);
+  }
+};
 
-// Basic Test Route
+// Middleware to ensure DB connection on serverless calls
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// Health Check API
 app.get('/api/health', (req, res) => {
   res.json({ status: 'active', message: 'RoastBattle Arena API Running 🔥' });
 });
 
-// Serve Frontend for Root Path
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Local Development Listen
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
 
-// Start Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Export app for Vercel Serverless Function
+module.exports = app;
